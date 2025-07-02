@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
         public string WorkPositionName { get; set; } = "";
-        public string WorkPositionDescription { get; set; } = "";
+        public string? WorkPositionDescription { get; set; }
     }
 }
