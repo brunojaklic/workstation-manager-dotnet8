@@ -9,8 +9,8 @@ namespace WorkstationManager.Models
         public int WorkPositionId { get; set; }
         public string ProductName { get; set; } = "";
         public DateTime WorkDate { get; set; }
-        public User? User { get; set; }
-        public WorkPosition? WorkPosition { get; set; }
+        public User User { get; set; } = null!;
+        public WorkPosition WorkPosition { get; set; } = null!;
 
     }
 }
