@@ -29,7 +29,7 @@ CREATE TABLE user_work_positions (
     user_id INT NOT NULL,
     work_position_id INT NOT NULL,
     product_name VARCHAR(100) NOT NULL,
-    date DATE NOT NULL,
+    work_date DATE NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (work_position_id) REFERENCES work_positions(id)
 );
