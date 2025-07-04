@@ -1,0 +1,8 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="WorkstationManager.Views.UserWindow"
+             Width="800" Height="450">
+	<StackPanel Margin="20" Spacing="10">
+		<TextBlock Text="User View" FontSize="24" />
+	</StackPanel>
+</UserControl>

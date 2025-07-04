@@ -27,6 +27,7 @@ namespace WorkstationManager
                 {
                     DataContext = new MainWindowViewModel(),
                 };
+                desktop.MainWindow.Show();
             }
 
             base.OnFrameworkInitializationCompleted();
