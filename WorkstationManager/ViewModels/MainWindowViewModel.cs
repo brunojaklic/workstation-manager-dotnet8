@@ -17,7 +17,7 @@ namespace WorkstationManager.ViewModels
 
         public MainWindowViewModel()
         {
-            CurrentViewModel = this; // Shows the login panel by default
+            CurrentViewModel = this;
         }
 
         [RelayCommand]
