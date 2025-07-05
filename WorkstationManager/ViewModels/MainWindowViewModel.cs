@@ -14,6 +14,8 @@ namespace WorkstationManager.ViewModels
         [ObservableProperty] private string password = "";
         [ObservableProperty] private string errorMessage = "";
         [ObservableProperty] private object? currentViewModel;
+        [ObservableProperty] private bool isLoginVisible = true;
+
 
         public MainWindowViewModel()
         {
@@ -41,6 +43,7 @@ namespace WorkstationManager.ViewModels
                 {
                     ErrorMessage = "";
                     Password = "";
+                    IsLoginVisible = false;
 
                     if (user.Role.RoleName == "Admin")
                     {
