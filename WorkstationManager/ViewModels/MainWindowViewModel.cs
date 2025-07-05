@@ -1,27 +1,24 @@
-﻿using Avalonia.Controls.ApplicationLifetimes;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using WorkstationManager.Data;
-using Avalonia;
-using WorkstationManager.Views;
+using WorkstationManager.ViewModels;
 using static BCrypt.Net.BCrypt;
 
 namespace WorkstationManager.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
-        [ObservableProperty]
-        private string username = "";
+        [ObservableProperty] private string username = "";
+        [ObservableProperty] private string password = "";
+        [ObservableProperty] private string errorMessage = "";
+        [ObservableProperty] private object? currentViewModel;
 
-        [ObservableProperty]
-        private string password = "";
-
-        [ObservableProperty]
-        private string errorMessage = "";
+        public MainWindowViewModel()
+        {
+            CurrentViewModel = this; // Shows the login panel by default
+        }
 
         [RelayCommand]
         private async Task SignIn()
@@ -45,33 +42,18 @@ namespace WorkstationManager.ViewModels
                     ErrorMessage = "";
                     Password = "";
 
-                    var lifetime = Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
-                    var mainWindow = lifetime?.MainWindow;
-
                     if (user.Role.RoleName == "Admin")
                     {
-                        var adminWindow = new AdminWindow
-                        {
-                            DataContext = new AdminViewModel(user)
-                        };
-                        await adminWindow.ShowDialog(mainWindow);
+                        CurrentViewModel = new AdminViewModel(user);
                     }
                     else if (user.Role.RoleName == "User")
                     {
-                        var userWindow = new UserWindow
-                        {
-                            DataContext = new UserViewModel(user)
-                        };
-                        await userWindow.ShowDialog(mainWindow);
+                        CurrentViewModel = new UserViewModel(user);
                     }
                     else
                     {
                         ErrorMessage = "Unknown user role";
-                        return;
                     }
-
-                    var loginWindow = lifetime?.Windows.FirstOrDefault(w => w.DataContext == this);
-                    loginWindow?.Close();
                 }
                 else
                 {
@@ -79,7 +61,7 @@ namespace WorkstationManager.ViewModels
                     Password = "";
                 }
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 ErrorMessage = "Login error: " + e.Message;
             }
