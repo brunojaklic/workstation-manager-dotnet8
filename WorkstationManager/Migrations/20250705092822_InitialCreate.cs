@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace WorkstationManager.Migrations
 {
     /// <inheritdoc />
@@ -55,13 +57,13 @@ namespace WorkstationManager.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    FirstName = table.Column<string>(type: "longtext", nullable: false)
+                    FirstName = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    LastName = table.Column<string>(type: "longtext", nullable: false)
+                    LastName = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Username = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PasswordHash = table.Column<string>(type: "longtext", nullable: false)
+                    Password = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     RoleId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -106,6 +108,24 @@ namespace WorkstationManager.Migrations
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "RoleDescription", "RoleName" },
+                values: new object[,]
+                {
+                    { 1, null, "Admin" },
+                    { 2, null, "User" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "FirstName", "LastName", "Password", "RoleId", "Username" },
+                values: new object[,]
+                {
+                    { 1, null, null, "$2a$11$bWLare67sCU3l1fEfn0hj.egr6QLnAvC.qZ9YTY7FDmsrZbkYRPPC", 1, "dario123" },
+                    { 2, null, null, "$2a$11$aqXbDewkEvT2zGyJblKBDuWUqqHKjE8jzvCSceN/kFHFhB/gAHnK6", 2, "pero3" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",

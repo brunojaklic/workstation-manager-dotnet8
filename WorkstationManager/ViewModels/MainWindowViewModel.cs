@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using WorkstationManager.Data;
 using Avalonia;
 using WorkstationManager.Views;
+using static BCrypt.Net.BCrypt;
 
 namespace WorkstationManager.ViewModels
 {
@@ -39,7 +40,7 @@ namespace WorkstationManager.ViewModels
                     .Include(u => u.Role)
                     .FirstOrDefaultAsync(u => u.Username == Username);
 
-                if (user != null && VerifyPassword(Password, user.PasswordHash))
+                if (user != null && Verify(Password, user.Password))
                 {
                     ErrorMessage = "";
                     Password = "";
@@ -82,12 +83,6 @@ namespace WorkstationManager.ViewModels
             {
                 ErrorMessage = "Login error: " + e.Message;
             }
-        }
-
-
-        private bool VerifyPassword(string enteredPassword, string storedPassword)
-        {
-            return enteredPassword == storedPassword;
         }
     }
 }

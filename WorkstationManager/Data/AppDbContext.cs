@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using WorkstationManager.Models;
+using static BCrypt.Net.BCrypt;
 
 namespace WorkstationManager.Data
 {
@@ -25,6 +26,10 @@ namespace WorkstationManager.Data
             modelBuilder.Entity<Role>().HasData(
                 new Role { Id = 1, RoleName = "Admin" },
                 new Role { Id = 2, RoleName = "User" }
+            );
+            modelBuilder.Entity<User>().HasData(
+                new User { Id = 1, Username = "dario123", Password = HashPassword("pw"), RoleId = 1 },
+                new User { Id = 2, Username = "pero3", Password = HashPassword("pw"), RoleId = 2 }
             );
         }
 

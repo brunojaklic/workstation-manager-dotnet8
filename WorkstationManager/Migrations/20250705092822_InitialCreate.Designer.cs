@@ -11,8 +11,8 @@ using WorkstationManager.Data;
 namespace WorkstationManager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250704131800_FixOnConfiguring")]
-    partial class FixOnConfiguring
+    [Migration("20250705092822_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,14 +59,12 @@ namespace WorkstationManager.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -82,6 +80,22 @@ namespace WorkstationManager.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Password = "$2a$11$bWLare67sCU3l1fEfn0hj.egr6QLnAvC.qZ9YTY7FDmsrZbkYRPPC",
+                            RoleId = 1,
+                            Username = "dario123"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Password = "$2a$11$aqXbDewkEvT2zGyJblKBDuWUqqHKjE8jzvCSceN/kFHFhB/gAHnK6",
+                            RoleId = 2,
+                            Username = "pero3"
+                        });
                 });
 
             modelBuilder.Entity("WorkstationManager.Models.UserWorkPosition", b =>
