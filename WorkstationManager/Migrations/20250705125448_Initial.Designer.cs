@@ -11,8 +11,8 @@ using WorkstationManager.Data;
 namespace WorkstationManager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250705092822_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250705125448_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,11 +43,13 @@ namespace WorkstationManager.Migrations
                         new
                         {
                             Id = 1,
+                            RoleDescription = "Administrator with full access",
                             RoleName = "Admin"
                         },
                         new
                         {
                             Id = 2,
+                            RoleDescription = "Standard user with limited access",
                             RoleName = "User"
                         });
                 });
@@ -85,16 +87,38 @@ namespace WorkstationManager.Migrations
                         new
                         {
                             Id = 1,
-                            Password = "$2a$11$bWLare67sCU3l1fEfn0hj.egr6QLnAvC.qZ9YTY7FDmsrZbkYRPPC",
+                            FirstName = "John",
+                            LastName = "Doe",
+                            Password = "$2a$11$Xj64eWw0hRmN.DyyLKjZA.Tze82i/Kn0gz.sElGNN6VREDmpd/qFW",
                             RoleId = 1,
-                            Username = "dario123"
+                            Username = "johndoe"
                         },
                         new
                         {
                             Id = 2,
-                            Password = "$2a$11$aqXbDewkEvT2zGyJblKBDuWUqqHKjE8jzvCSceN/kFHFhB/gAHnK6",
+                            FirstName = "Jane",
+                            LastName = "Smith",
+                            Password = "$2a$11$WbdArPUeEn3kGEvYG/790.hDATZu1yxcGmWBBQqqMxGd2U4oLXc2S",
                             RoleId = 2,
-                            Username = "pero3"
+                            Username = "janesmith"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FirstName = "Robert",
+                            LastName = "Johnson",
+                            Password = "$2a$11$id2aFqUXxZIL5WTwnjiAVOFaCYD7Q6o/QQhZRtuUYSAUMXh2M7wUC",
+                            RoleId = 2,
+                            Username = "rjohnson"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            FirstName = "Emily",
+                            LastName = "Williams",
+                            Password = "$2a$11$ZwusYwThnihgEC6G.d3.LOVx6l2gx.VTDYcqi7bLxmRGRxKoBJ092",
+                            RoleId = 2,
+                            Username = "ewilliams"
                         });
                 });
 
@@ -124,6 +148,48 @@ namespace WorkstationManager.Migrations
                     b.HasIndex("WorkPositionId");
 
                     b.ToTable("UserWorkPositions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ProductName = "ERP System",
+                            UserId = 1,
+                            WorkDate = new DateTime(2023, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            WorkPositionId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ProductName = "CRM Platform",
+                            UserId = 1,
+                            WorkDate = new DateTime(2023, 2, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            WorkPositionId = 4
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ProductName = "Mobile App",
+                            UserId = 2,
+                            WorkDate = new DateTime(2023, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            WorkPositionId = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ProductName = "Data Analytics Tool",
+                            UserId = 3,
+                            WorkDate = new DateTime(2023, 4, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            WorkPositionId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ProductName = "E-commerce Website",
+                            UserId = 4,
+                            WorkDate = new DateTime(2023, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            WorkPositionId = 3
+                        });
                 });
 
             modelBuilder.Entity("WorkstationManager.Models.WorkPosition", b =>
@@ -142,6 +208,32 @@ namespace WorkstationManager.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("WorkPositions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            WorkPositionDescription = "Software development position",
+                            WorkPositionName = "Developer"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            WorkPositionDescription = "UI/UX design position",
+                            WorkPositionName = "Designer"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            WorkPositionDescription = "Quality assurance position",
+                            WorkPositionName = "Tester"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            WorkPositionDescription = "Infrastructure and deployment position",
+                            WorkPositionName = "DevOps"
+                        });
                 });
 
             modelBuilder.Entity("WorkstationManager.Models.User", b =>
