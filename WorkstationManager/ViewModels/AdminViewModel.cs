@@ -58,6 +58,15 @@ namespace WorkstationManager.ViewModels
         [ObservableProperty]
         private string creationSuccessMessage = "";
 
+        [ObservableProperty]
+        private string productName = "";
+
+        [ObservableProperty]
+        private WorkPosition? newUserWorkPosition;
+
+        [ObservableProperty]
+        private string newUserProductName = "";
+
         public string SelectedUserCurrentWorkPosition
         {
             get
@@ -89,6 +98,21 @@ namespace WorkstationManager.ViewModels
             }
         }
 
+        public string SelectedUserCurrentProductName
+        {
+            get
+            {
+                if (SelectedUser == null) return "-";
+                using var db = new AppDbContext();
+                var assignment = db.UserWorkPositions
+                    .Where(uwp => uwp.UserId == SelectedUser.Id)
+                    .OrderByDescending(uwp => uwp.WorkDate)
+                    .FirstOrDefault();
+
+                return assignment?.ProductName ?? "-";
+            }
+        }
+
         public IAsyncRelayCommand LoadDataCommand { get; }
         public IAsyncRelayCommand ChangeAssignmentCommand { get; }
         public IAsyncRelayCommand CreateUserCommand { get; }
@@ -97,6 +121,7 @@ namespace WorkstationManager.ViewModels
         {
             OnPropertyChanged(nameof(SelectedUserCurrentWorkPosition));
             OnPropertyChanged(nameof(SelectedUserCurrentAssignmentDate));
+            OnPropertyChanged(nameof(SelectedUserCurrentProductName));
 
             using var db = new AppDbContext();
 
@@ -116,7 +141,6 @@ namespace WorkstationManager.ViewModels
                 ? WorkPositions.FirstOrDefault(wp => wp.Id == assignment.WorkPositionId)
                 : null;
         }
-
 
         private async Task LoadDataAsync()
         {
@@ -148,7 +172,7 @@ namespace WorkstationManager.ViewModels
             {
                 UserId = SelectedUser.Id,
                 WorkPositionId = SelectedWorkPosition.Id,
-                ProductName = "Updated by Admin",
+                ProductName = ProductName,
                 WorkDate = DateTime.Now
             };
 
@@ -157,11 +181,14 @@ namespace WorkstationManager.ViewModels
 
             OnPropertyChanged(nameof(SelectedUserCurrentWorkPosition));
             OnPropertyChanged(nameof(SelectedUserCurrentAssignmentDate));
+            OnPropertyChanged(nameof(SelectedUserCurrentProductName));
 
             var selectedUserId = SelectedUser.Id;
             await LoadDataAsync();
 
             SelectedUser = Users.FirstOrDefault(u => u.Id == selectedUserId);
+
+            ProductName = "";
         }
 
         private async Task CreateUserAsync()
@@ -172,6 +199,12 @@ namespace WorkstationManager.ViewModels
             if (string.IsNullOrWhiteSpace(NewUsername) || string.IsNullOrWhiteSpace(NewPassword))
             {
                 CreationErrorMessage = "Username and Password are required.";
+                return;
+            }
+
+            if (NewUserWorkPosition == null)
+            {
+                CreationErrorMessage = "Please select a work position for the new user.";
                 return;
             }
 
@@ -205,14 +238,29 @@ namespace WorkstationManager.ViewModels
             db.Users.Add(newUser);
             await db.SaveChangesAsync();
 
+            var assignment = new UserWorkPosition
+            {
+                UserId = newUser.Id,
+                WorkPositionId = NewUserWorkPosition.Id,
+                ProductName = NewUserProductName,
+                WorkDate = DateTime.Now
+            };
+
+            db.UserWorkPositions.Add(assignment);
+            await db.SaveChangesAsync();
+
             CreationSuccessMessage = "User created successfully!";
 
             NewUsername = "";
-            NewPassword = "";
             NewFirstName = "";
             NewLastName = "";
+            NewPassword = "";
+            NewUserWorkPosition = null;
+            NewUserProductName = "";
 
             await LoadDataAsync();
+
+            SelectedUser = Users.FirstOrDefault(u => u.Id == newUser.Id);
         }
     }
 }
