@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using WorkstationManager.Data;
@@ -12,6 +13,8 @@ namespace WorkstationManager.ViewModels
         [ObservableProperty] private string firstName = "";
         [ObservableProperty] private string lastName = "";
         [ObservableProperty] private string workstation = "";
+        [ObservableProperty] private string productName = "";
+        [ObservableProperty] private string assignmentDate = "";
 
         public UserViewModel(User user)
         {
@@ -33,10 +36,14 @@ namespace WorkstationManager.ViewModels
             if (latestAssignment != null)
             {
                 Workstation = latestAssignment.WorkPosition.WorkPositionName;
+                ProductName = latestAssignment.ProductName;
+                AssignmentDate = latestAssignment.WorkDate.ToString("yyyy-MM-dd");
             }
             else
             {
                 Workstation = "No workstation assigned";
+                ProductName = "-";
+                AssignmentDate = "-";
             }
         }
     }
