@@ -11,8 +11,8 @@ using WorkstationManager.Data;
 namespace WorkstationManager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250705125448_Initial")]
-    partial class Initial
+    [Migration("20250706204837_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,7 +89,7 @@ namespace WorkstationManager.Migrations
                             Id = 1,
                             FirstName = "John",
                             LastName = "Doe",
-                            Password = "$2a$11$Xj64eWw0hRmN.DyyLKjZA.Tze82i/Kn0gz.sElGNN6VREDmpd/qFW",
+                            Password = "$2a$11$zWb0MR5GL8u6ITn7wwkT..midrrrZGOPCTyHOHTSRMndmf7XsQYsO",
                             RoleId = 1,
                             Username = "johndoe"
                         },
@@ -98,7 +98,7 @@ namespace WorkstationManager.Migrations
                             Id = 2,
                             FirstName = "Jane",
                             LastName = "Smith",
-                            Password = "$2a$11$WbdArPUeEn3kGEvYG/790.hDATZu1yxcGmWBBQqqMxGd2U4oLXc2S",
+                            Password = "$2a$11$Pk5CL5X7vCV3yHoo.TXu/edobRXniGaENgWx.ZTLNFuhadoxIkzx6",
                             RoleId = 2,
                             Username = "janesmith"
                         },
@@ -107,7 +107,7 @@ namespace WorkstationManager.Migrations
                             Id = 3,
                             FirstName = "Robert",
                             LastName = "Johnson",
-                            Password = "$2a$11$id2aFqUXxZIL5WTwnjiAVOFaCYD7Q6o/QQhZRtuUYSAUMXh2M7wUC",
+                            Password = "$2a$11$MB8m0uCtkkZfsjQC1/tfZeXUJHgsznISVkN6hWySVB9101qmMOZ9m",
                             RoleId = 2,
                             Username = "rjohnson"
                         },
@@ -116,7 +116,7 @@ namespace WorkstationManager.Migrations
                             Id = 4,
                             FirstName = "Emily",
                             LastName = "Williams",
-                            Password = "$2a$11$ZwusYwThnihgEC6G.d3.LOVx6l2gx.VTDYcqi7bLxmRGRxKoBJ092",
+                            Password = "$2a$11$qsEiLsT0uLlpyHdsXiMJi.IlNCKBmGXi07q0Mo6mBdltHoSVxVhUG",
                             RoleId = 2,
                             Username = "ewilliams"
                         });
