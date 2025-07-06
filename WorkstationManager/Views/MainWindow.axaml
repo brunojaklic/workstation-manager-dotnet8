@@ -14,7 +14,12 @@
 		<DataTemplate DataType="vm:UserViewModel">
 			<views:UserView />
 		</DataTemplate>
+
+		<DataTemplate DataType="vm:AdminViewModel">
+			<views:AdminView />
+		</DataTemplate>
 	</Window.DataTemplates>
+
 
 
 	<Design.DataContext>
