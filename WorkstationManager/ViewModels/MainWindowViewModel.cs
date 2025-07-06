@@ -17,10 +17,6 @@ namespace WorkstationManager.ViewModels
         [ObservableProperty] private bool isLoginVisible = true;
 
 
-        public MainWindowViewModel()
-        {
-            CurrentViewModel = this;
-        }
 
         [RelayCommand]
         private async Task SignIn()
