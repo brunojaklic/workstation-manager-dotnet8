@@ -72,22 +72,6 @@ namespace WorkstationManager.ViewModels
         [ObservableProperty]
         private string newUserProductName = "";
 
-        public string SelectedUserCurrentWorkPosition
-        {
-            get
-            {
-                if (SelectedUser == null) return "-";
-                using var db = new AppDbContext();
-                var assignment = db.UserWorkPositions
-                    .Include(uwp => uwp.WorkPosition)
-                    .Where(uwp => uwp.UserId == SelectedUser.Id)
-                    .OrderByDescending(uwp => uwp.WorkDate)
-                    .FirstOrDefault();
-
-                return assignment?.WorkPosition.WorkPositionName ?? "No work position assigned";
-            }
-        }
-
         public string SelectedUserCurrentAssignmentDate
         {
             get
@@ -103,30 +87,13 @@ namespace WorkstationManager.ViewModels
             }
         }
 
-        public string SelectedUserCurrentProductName
-        {
-            get
-            {
-                if (SelectedUser == null) return "-";
-                using var db = new AppDbContext();
-                var assignment = db.UserWorkPositions
-                    .Where(uwp => uwp.UserId == SelectedUser.Id)
-                    .OrderByDescending(uwp => uwp.WorkDate)
-                    .FirstOrDefault();
-
-                return assignment?.ProductName ?? "-";
-            }
-        }
-
         public IAsyncRelayCommand LoadDataCommand { get; }
         public IAsyncRelayCommand ChangeAssignmentCommand { get; }
         public IAsyncRelayCommand CreateUserCommand { get; }
 
         partial void OnSelectedUserChanged(User? oldValue, User? newValue)
         {
-            OnPropertyChanged(nameof(SelectedUserCurrentWorkPosition));
             OnPropertyChanged(nameof(SelectedUserCurrentAssignmentDate));
-            OnPropertyChanged(nameof(SelectedUserCurrentProductName));
 
             using var db = new AppDbContext();
 
@@ -134,6 +101,7 @@ namespace WorkstationManager.ViewModels
             if (selectedUserId == null)
             {
                 SelectedWorkPosition = null;
+                ProductName = "";
                 return;
             }
 
@@ -145,6 +113,8 @@ namespace WorkstationManager.ViewModels
             SelectedWorkPosition = assignment != null
                 ? WorkPositions.FirstOrDefault(wp => wp.Id == assignment.WorkPositionId)
                 : null;
+
+            ProductName = assignment?.ProductName ?? "";
         }
 
         private async Task LoadDataAsync()
@@ -184,16 +154,12 @@ namespace WorkstationManager.ViewModels
             db.UserWorkPositions.Add(newAssignment);
             await db.SaveChangesAsync();
 
-            OnPropertyChanged(nameof(SelectedUserCurrentWorkPosition));
             OnPropertyChanged(nameof(SelectedUserCurrentAssignmentDate));
-            OnPropertyChanged(nameof(SelectedUserCurrentProductName));
 
             var selectedUserId = SelectedUser.Id;
             await LoadDataAsync();
 
             SelectedUser = Users.FirstOrDefault(u => u.Id == selectedUserId);
-
-            ProductName = "";
         }
 
         private async Task CreateUserAsync()

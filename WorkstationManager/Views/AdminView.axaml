@@ -43,7 +43,6 @@
 			Grid.Row="0"
 			Grid.Column="2"/>
 
-
 		<StackPanel Grid.Row="1" Grid.Column="0">
 			<TextBlock Text="Users:" FontWeight="Bold" Margin="0,0,0,5"/>
 			<ListBox ItemsSource="{Binding Users}"
@@ -67,14 +66,8 @@
 			<TextBlock Text="Last Name:"/>
 			<TextBlock Text="{Binding SelectedUser.LastName}" />
 
-			<TextBlock Text="Current Work Position:"/>
-			<TextBlock Text="{Binding SelectedUserCurrentWorkPosition}" />
-
 			<TextBlock Text="Assignment Date:"/>
 			<TextBlock Text="{Binding SelectedUserCurrentAssignmentDate}" />
-
-			<TextBlock Text="Product Name:"/>
-			<TextBlock Text="{Binding SelectedUserCurrentProductName}" />
 
 			<TextBlock Text="Change Work Position:"/>
 			<ComboBox ItemsSource="{Binding WorkPositions}"
@@ -86,7 +79,7 @@
 				</ComboBox.ItemTemplate>
 			</ComboBox>
 
-			<TextBlock Text="Product Name:" />
+			<TextBlock Text="Current Product Name:" />
 			<TextBox Text="{Binding ProductName, Mode=TwoWay}" />
 
 			<Button Content="Change Assignment"
@@ -100,10 +93,10 @@
 			<TextBlock Text="Username:"/>
 			<TextBox Text="{Binding NewUsername}" />
 
-			<TextBlock Text="First Name:"/>
+			<TextBlock Text="First Name (optional):"/>
 			<TextBox Text="{Binding NewFirstName}" />
 
-			<TextBlock Text="Last Name:"/>
+			<TextBlock Text="Last Name (optional):"/>
 			<TextBox Text="{Binding NewLastName}" />
 
 			<TextBlock Text="Password:"/>
