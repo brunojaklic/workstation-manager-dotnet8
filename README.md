@@ -78,15 +78,19 @@ The application follows a clean **MVVM architecture**.
 
 ## 🚀 How to Run
 
-1. **Ensure prerequisites:**
-   - Install [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) (required to run Docker containers)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
-2. **Navigate to project directory and start services:**
+### Steps to Run
 
-```bash
-cd .\WorkstationManager\
-docker compose up -d
-dotnet clean
-dotnet build
-dotnet ef database update
-dotnet run
+1. Open a terminal and type:
+
+   ```bash
+   cd .\WorkstationManager\
+   docker compose up -d
+   dotnet clean
+   dotnet build
+   dotnet ef database update
+   dotnet run
+   
