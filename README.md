@@ -80,9 +80,13 @@ The application follows a clean **MVVM architecture**.
 
 1. **Ensure prerequisites:**
    - Install [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-   - Have a running MySQL server and update your connection string in the app settings accordingly.
 
-2. **Apply database migrations:**
+2. **Navigate to project directory and start services:**
 
-   ```bash
-   dotnet ef database update
+```bash
+cd .\WorkstationManager\
+docker compose up -d
+dotnet clean
+dotnet build
+dotnet ef database update
+dotnet run
