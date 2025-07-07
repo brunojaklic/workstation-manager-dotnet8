@@ -16,7 +16,7 @@ namespace WorkstationManager.Data
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseMySql(
-                "server=localhost;database=workstation_db;user=root;password=password123;",
+                "server=localhost;port=3306;database=workstation_db;user=root;password=root;",
                 new MySqlServerVersion(new Version(8, 0, 42))
             );
         }
