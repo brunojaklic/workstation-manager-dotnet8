@@ -42,11 +42,14 @@
 			</StackPanel>
 
 			<Button Content="Sign Out"
-                    Command="{Binding SignOutCommand}"
-                    Background="#A83232"
-                    Foreground="White"
-                    HorizontalAlignment="Center"
-                    Width="100" />
+				Command="{Binding SignOutCommand}"
+				Background="#1E1E1E"
+				Foreground="White"
+				HorizontalAlignment="Center"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				Width="100" />
+
 		</StackPanel>
 	</Border>
 </UserControl>
