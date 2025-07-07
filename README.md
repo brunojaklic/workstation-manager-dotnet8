@@ -65,6 +65,7 @@ Entity Framework is used to manage a local **MySQL** database with the following
 - **Avalonia UI** – Cross-platform UI framework
 - **Entity Framework Core** – ORM for database interaction
 - **MySQL** – Relational database
+- **Docker** – Containerization for running services and dependencies
 - **CommunityToolkit.MVVM** – Lightweight MVVM support
 - **BCrypt.Net** – Password hashing for secure storage
 
