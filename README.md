@@ -25,37 +25,37 @@ A desktop application built with **.NET 8**, **Avalonia UI**, **Entity Framework
 Entity Framework is used to manage a local **MySQL** database with the following tables:
 
 ### `users`
-| Column      | Type     |
-|-------------|----------|
-| id          | int (PK) |
-| first_name  | string   |
-| last_name   | string   |
-| username    | string   |
-| password    | string (hashed) |
-| role_id     | FK → roles.id |
+| Column      | Type               |
+|-------------|--------------------|
+| id          | int (PK)           |
+| first_name  | string             |
+| last_name   | string             |
+| username    | string             |
+| password    | string (hashed)    |
+| role_id     | FK → roles.id      |
 
 ### `roles`
-| Column          | Type     |
-|------------------|----------|
-| id               | int (PK) |
-| name             | string (Admin/User) |
-| description      | string   |
+| Column      | Type                   |
+|-------------|------------------------|
+| id          | int (PK)               |
+| name        | string (Admin/User)    |
+| description | string                 |
 
 ### `work_positions`
-| Column              | Type     |
-|---------------------|----------|
-| id                  | int (PK) |
-| name                | string   |
-| description         | string   |
+| Column      | Type                   |
+|-------------|------------------------|
+| id          | int (PK)               |
+| name        | string                 |
+| description | string                 |
 
 ### `user_work_positions`
-| Column          | Type     |
-|------------------|----------|
-| id               | int (PK) |
-| user_id          | FK → users.id |
-| work_position_id | FK → work_positions.id |
-| product_name     | string   |
-| date_assigned    | DateTime |
+| Column          | Type                   |
+|-----------------|------------------------|
+| id              | int (PK)               |
+| user_id         | FK → users.id          |
+| work_position_id| FK → work_positions.id |
+| product_name    | string                 |
+| date_assigned   | DateTime               |
 
 ---
 
@@ -72,5 +72,17 @@ Entity Framework is used to manage a local **MySQL** database with the following
 
 ## 🧱 Architecture
 
-The application follows a clean **MVVM architecture**:
+The application follows a clean **MVVM architecture**.
 
+---
+
+## 🚀 How to Run
+
+1. **Ensure prerequisites:**
+   - Install [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+   - Have a running MySQL server and update your connection string in the app settings accordingly.
+
+2. **Apply database migrations:**
+
+   ```bash
+   dotnet ef database update
