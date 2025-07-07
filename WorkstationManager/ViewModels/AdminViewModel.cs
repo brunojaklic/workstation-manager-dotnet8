@@ -13,10 +13,12 @@ namespace WorkstationManager.ViewModels
     public partial class AdminViewModel : ObservableObject
     {
         private readonly User currentUser;
+        private readonly IRelayCommand signOutCommand;
 
-        public AdminViewModel(User user)
+        public AdminViewModel(User user, IRelayCommand signOutCommand)
         {
             currentUser = user;
+            this.signOutCommand = signOutCommand;
 
             Users = new ObservableCollection<User>();
             WorkPositions = new ObservableCollection<WorkPosition>();
@@ -27,6 +29,8 @@ namespace WorkstationManager.ViewModels
 
             _ = LoadDataAsync();
         }
+
+        public IRelayCommand SignOutCommand => signOutCommand;
 
         [ObservableProperty]
         private ObservableCollection<User> users;

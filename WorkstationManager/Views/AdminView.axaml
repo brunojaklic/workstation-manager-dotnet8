@@ -31,6 +31,15 @@
                    Grid.ColumnSpan="3"
                    Margin="0,0,0,10" />
 
+		<Button Content="Sign Out"
+        Command="{Binding SignOutCommand}"
+        HorizontalAlignment="Right"
+        Width="100"
+        Grid.Row="0"
+        Grid.Column="2"
+        Margin="0,0,0,10"/>
+
+
 		<StackPanel Grid.Row="1" Grid.Column="0">
 			<TextBlock Text="Users:" FontWeight="Bold" Margin="0,0,0,5"/>
 			<ListBox ItemsSource="{Binding Users}"

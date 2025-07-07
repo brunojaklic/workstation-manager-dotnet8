@@ -16,8 +16,6 @@ namespace WorkstationManager.ViewModels
         [ObservableProperty] private object? currentViewModel;
         [ObservableProperty] private bool isLoginVisible = true;
 
-
-
         [RelayCommand]
         private async Task SignIn()
         {
@@ -43,11 +41,11 @@ namespace WorkstationManager.ViewModels
 
                     if (user.Role.RoleName == "Admin")
                     {
-                        CurrentViewModel = new AdminViewModel(user);
+                        CurrentViewModel = new AdminViewModel(user, SignOutCommand);
                     }
                     else if (user.Role.RoleName == "User")
                     {
-                        CurrentViewModel = new UserViewModel(user);
+                        CurrentViewModel = new UserViewModel(user, SignOutCommand);
                     }
                     else
                     {
@@ -64,6 +62,16 @@ namespace WorkstationManager.ViewModels
             {
                 ErrorMessage = "Login error: " + e.Message;
             }
+        }
+
+        [RelayCommand]
+        private void SignOut()
+        {
+            CurrentViewModel = null;
+            Username = "";
+            Password = "";
+            ErrorMessage = "";
+            IsLoginVisible = true;
         }
     }
 }

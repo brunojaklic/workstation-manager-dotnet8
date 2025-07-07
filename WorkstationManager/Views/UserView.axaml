@@ -40,6 +40,13 @@
 				<TextBlock Text="Assignment Date:" FontWeight="Bold" />
 				<TextBlock Text="{Binding AssignmentDate}" />
 			</StackPanel>
+
+			<Button Content="Sign Out"
+                    Command="{Binding SignOutCommand}"
+                    Background="#A83232"
+                    Foreground="White"
+                    HorizontalAlignment="Center"
+                    Width="100" />
 		</StackPanel>
 	</Border>
 </UserControl>

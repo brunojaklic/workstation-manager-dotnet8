@@ -1,8 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Linq;
-using System.Threading.Tasks;
 using WorkstationManager.Data;
 using WorkstationManager.Models;
 
@@ -16,10 +15,13 @@ namespace WorkstationManager.ViewModels
         [ObservableProperty] private string productName = "";
         [ObservableProperty] private string assignmentDate = "";
 
-        public UserViewModel(User user)
+        public IRelayCommand SignOutCommand { get; }
+
+        public UserViewModel(User user, IRelayCommand signOutCommand)
         {
             FirstName = user.FirstName ?? "";
             LastName = user.LastName ?? "";
+            SignOutCommand = signOutCommand;
 
             LoadLatestWorkstation(user.Id);
         }
