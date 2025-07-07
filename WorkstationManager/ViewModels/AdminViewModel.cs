@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WorkstationManager.Data;
 using WorkstationManager.Models;
@@ -203,6 +204,18 @@ namespace WorkstationManager.ViewModels
             if (string.IsNullOrWhiteSpace(NewUsername) || string.IsNullOrWhiteSpace(NewPassword))
             {
                 CreationErrorMessage = "Username and Password are required.";
+                return;
+            }
+
+            if (NewUsername.Length > 20 || NewUsername.Length < 3)
+            {
+                CreationErrorMessage = "Username must be between 3 and 20 characters long.";
+                return;
+            }
+
+            if (!Regex.IsMatch(NewUsername, @"^[a-zA-Z0-9]+$"))
+            {
+                CreationErrorMessage = "Username can only contain alphanumeric characters.";
                 return;
             }
 
