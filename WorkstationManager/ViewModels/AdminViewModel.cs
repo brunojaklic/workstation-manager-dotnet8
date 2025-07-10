@@ -128,9 +128,11 @@ namespace WorkstationManager.ViewModels
             if (SelectedUser == null || SelectedWorkPosition == null)
                 return;
 
+            var userId = SelectedUser.Id;
+
             var newAssignment = new UserWorkPosition
             {
-                UserId = SelectedUser.Id,
+                UserId = userId,
                 WorkPositionId = SelectedWorkPosition.Id,
                 ProductName = ProductName,
                 WorkDate = DateTime.Now
@@ -138,12 +140,13 @@ namespace WorkstationManager.ViewModels
 
             await AdminService.AssignUserAsync(newAssignment);
 
-            await UpdateSelectedUserAssignmentDateAsync(SelectedUser.Id);
-
-            var selectedUserId = SelectedUser.Id;
             await LoadDataAsync();
-            SelectedUser = Users.FirstOrDefault(u => u.Id == selectedUserId);
+
+            SelectedUser = Users.FirstOrDefault(u => u.Id == userId);
+
+            await OnSelectedUserChangedAsync(SelectedUser);
         }
+
 
         private async Task CreateUserAsync()
         {
