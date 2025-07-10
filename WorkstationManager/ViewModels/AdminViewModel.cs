@@ -77,6 +77,7 @@ namespace WorkstationManager.ViewModels
             {
                 SelectedWorkPosition = null;
                 ProductName = "";
+                SelectedUserCurrentAssignmentDate = "-";
                 return;
             }
 
@@ -87,6 +88,8 @@ namespace WorkstationManager.ViewModels
                 : null;
 
             ProductName = assignment?.ProductName ?? "";
+
+            SelectedUserCurrentAssignmentDate = assignment?.WorkDate.ToString("yyyy-MM-dd") ?? "-";
 
             OnPropertyChanged(nameof(SelectedUserCurrentAssignmentDate));
         }

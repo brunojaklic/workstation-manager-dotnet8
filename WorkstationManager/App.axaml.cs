@@ -49,12 +49,14 @@ namespace WorkstationManager
                     "server=localhost;port=3306;database=workstation_db;user=root;password=password123;",
                     new MySqlServerVersion(new System.Version(8, 0, 42))
                 );
-            });
-            services.AddSingleton<IUserService, UserService>();
-            services.AddSingleton<IAdminService, AdminService>();
+            }, ServiceLifetime.Transient);
+
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IAdminService, AdminService>();
 
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<AdminViewModel>();
+            services.AddTransient<UserViewModel>();
         }
     }
 }
