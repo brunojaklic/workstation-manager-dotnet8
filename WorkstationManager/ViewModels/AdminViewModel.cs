@@ -88,7 +88,6 @@ namespace WorkstationManager.ViewModels
                 : null;
 
             ProductName = assignment?.ProductName ?? "";
-
             SelectedUserCurrentAssignmentDate = assignment?.WorkDate.ToString("yyyy-MM-dd") ?? "-";
 
             OnPropertyChanged(nameof(SelectedUserCurrentAssignmentDate));
@@ -147,7 +146,6 @@ namespace WorkstationManager.ViewModels
             await OnSelectedUserChangedAsync(SelectedUser);
         }
 
-
         private async Task CreateUserAsync()
         {
             CreationErrorMessage = "";
@@ -203,6 +201,12 @@ namespace WorkstationManager.ViewModels
 
             var createdUser = await userService.CreateUserAsync(newUser);
 
+            if (createdUser == null)
+            {
+                CreationErrorMessage = "Failed to create user.";
+                return;
+            }
+
             var assignment = new UserWorkPosition
             {
                 UserId = createdUser.Id,
@@ -224,6 +228,5 @@ namespace WorkstationManager.ViewModels
             await LoadDataAsync();
             SelectedUser = Users.FirstOrDefault(u => u.Username == createdUser.Username);
         }
-
     }
 }
