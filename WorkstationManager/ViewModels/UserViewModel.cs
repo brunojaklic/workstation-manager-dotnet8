@@ -1,14 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using WorkstationManager.Data;
+using System.Threading.Tasks;
 using WorkstationManager.Models;
+using WorkstationManager.Services;
 
 namespace WorkstationManager.ViewModels
 {
     public partial class UserViewModel : ObservableObject
     {
+        private readonly IAdminService workstationService;
+
         [ObservableProperty] private string firstName = "";
         [ObservableProperty] private string lastName = "";
         [ObservableProperty] private string workstation = "";
@@ -17,23 +18,19 @@ namespace WorkstationManager.ViewModels
 
         public IRelayCommand SignOutCommand { get; }
 
-        public UserViewModel(User user, IRelayCommand signOutCommand)
+        public UserViewModel(User user, IRelayCommand signOutCommand, IAdminService workstationService)
         {
             FirstName = user.FirstName ?? "";
             LastName = user.LastName ?? "";
             SignOutCommand = signOutCommand;
+            this.workstationService = workstationService;
 
-            LoadLatestWorkstation(user.Id);
+            _ = LoadLatestWorkstationAsync(user.Id);
         }
 
-        private async void LoadLatestWorkstation(int userId)
+        private async Task LoadLatestWorkstationAsync(int userId)
         {
-            using var db = new AppDbContext();
-            var latestAssignment = await db.UserWorkPositions
-                .Include(wp => wp.WorkPosition)
-                .Where(wp => wp.UserId == userId)
-                .OrderByDescending(wp => wp.WorkDate)
-                .FirstOrDefaultAsync();
+            var latestAssignment = await workstationService.GetLatestAssignmentAsync(userId);
 
             if (latestAssignment != null)
             {

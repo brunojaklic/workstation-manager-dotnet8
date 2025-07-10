@@ -1,13 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using WorkstationManager.Data;
 using WorkstationManager.Models;
+using WorkstationManager.Services;
 
 namespace WorkstationManager.ViewModels
 {
@@ -15,11 +14,19 @@ namespace WorkstationManager.ViewModels
     {
         private readonly User currentUser;
         private readonly IRelayCommand signOutCommand;
+        private readonly IUserService userService;
+        private readonly IAdminService AdminService;
 
-        public AdminViewModel(User user, IRelayCommand signOutCommand)
+        public AdminViewModel(
+            User user,
+            IRelayCommand signOutCommand,
+            IUserService userService,
+            IAdminService AdminService)
         {
             currentUser = user;
             this.signOutCommand = signOutCommand;
+            this.userService = userService;
+            this.AdminService = AdminService;
 
             Users = new ObservableCollection<User>();
             WorkPositions = new ObservableCollection<WorkPosition>();
@@ -33,58 +40,26 @@ namespace WorkstationManager.ViewModels
 
         public IRelayCommand SignOutCommand => signOutCommand;
 
-        [ObservableProperty]
-        private ObservableCollection<User> users;
+        [ObservableProperty] private ObservableCollection<User> users;
+        [ObservableProperty] private User? selectedUser;
+        [ObservableProperty] private ObservableCollection<WorkPosition> workPositions;
+        [ObservableProperty] private WorkPosition? selectedWorkPosition;
+        [ObservableProperty] private string newUsername = "";
+        [ObservableProperty] private string newFirstName = "";
+        [ObservableProperty] private string newLastName = "";
+        [ObservableProperty] private string newPassword = "";
+        [ObservableProperty] private string creationErrorMessage = "";
+        [ObservableProperty] private string creationSuccessMessage = "";
+        [ObservableProperty] private string productName = "";
+        [ObservableProperty] private WorkPosition? newUserWorkPosition;
+        [ObservableProperty] private string newUserProductName = "";
 
-        [ObservableProperty]
-        private User? selectedUser;
-
-        [ObservableProperty]
-        private ObservableCollection<WorkPosition> workPositions;
-
-        [ObservableProperty]
-        private WorkPosition? selectedWorkPosition;
-
-        [ObservableProperty]
-        private string newUsername = "";
-
-        [ObservableProperty]
-        private string newFirstName = "";
-
-        [ObservableProperty]
-        private string newLastName = "";
-
-        [ObservableProperty]
-        private string newPassword = "";
-
-        [ObservableProperty]
-        private string creationErrorMessage = "";
-
-        [ObservableProperty]
-        private string creationSuccessMessage = "";
-
-        [ObservableProperty]
-        private string productName = "";
-
-        [ObservableProperty]
-        private WorkPosition? newUserWorkPosition;
-
-        [ObservableProperty]
-        private string newUserProductName = "";
+        private string selectedUserCurrentAssignmentDate = "-";
 
         public string SelectedUserCurrentAssignmentDate
         {
-            get
-            {
-                if (SelectedUser == null) return "-";
-                using var db = new AppDbContext();
-                var assignment = db.UserWorkPositions
-                    .Where(uwp => uwp.UserId == SelectedUser.Id)
-                    .OrderByDescending(uwp => uwp.WorkDate)
-                    .FirstOrDefault();
-
-                return assignment?.WorkDate.ToString("yyyy-MM-dd") ?? "-";
-            }
+            get => selectedUserCurrentAssignmentDate;
+            private set => SetProperty(ref selectedUserCurrentAssignmentDate, value);
         }
 
         public IAsyncRelayCommand LoadDataCommand { get; }
@@ -93,36 +68,45 @@ namespace WorkstationManager.ViewModels
 
         partial void OnSelectedUserChanged(User? oldValue, User? newValue)
         {
-            OnPropertyChanged(nameof(SelectedUserCurrentAssignmentDate));
+            _ = OnSelectedUserChangedAsync(newValue);
+        }
 
-            using var db = new AppDbContext();
-
-            int? selectedUserId = newValue?.Id;
-            if (selectedUserId == null)
+        private async Task OnSelectedUserChangedAsync(User? newValue)
+        {
+            if (newValue == null)
             {
                 SelectedWorkPosition = null;
                 ProductName = "";
                 return;
             }
 
-            var assignment = db.UserWorkPositions
-                .Where(uwp => uwp.UserId == selectedUserId.Value)
-                .OrderByDescending(uwp => uwp.WorkDate)
-                .FirstOrDefault();
+            var assignment = await AdminService.GetLatestAssignmentAsync(newValue.Id);
 
             SelectedWorkPosition = assignment != null
                 ? WorkPositions.FirstOrDefault(wp => wp.Id == assignment.WorkPositionId)
                 : null;
 
             ProductName = assignment?.ProductName ?? "";
+
+            OnPropertyChanged(nameof(SelectedUserCurrentAssignmentDate));
+        }
+
+        private async Task UpdateSelectedUserAssignmentDateAsync(int userId)
+        {
+            if (userId == 0)
+            {
+                SelectedUserCurrentAssignmentDate = "-";
+                return;
+            }
+
+            var assignment = await AdminService.GetLatestAssignmentAsync(userId);
+            SelectedUserCurrentAssignmentDate = assignment?.WorkDate.ToString("yyyy-MM-dd") ?? "-";
         }
 
         private async Task LoadDataAsync()
         {
-            using var db = new AppDbContext();
-
-            var users = await db.Users.Include(u => u.Role).ToListAsync();
-            var workPositions = await db.WorkPositions.ToListAsync();
+            var users = await userService.GetAllUsersAsync();
+            var workPositions = await AdminService.GetAllWorkstationsAsync();
 
             Users.Clear();
             foreach (var user in users)
@@ -141,8 +125,6 @@ namespace WorkstationManager.ViewModels
             if (SelectedUser == null || SelectedWorkPosition == null)
                 return;
 
-            using var db = new AppDbContext();
-
             var newAssignment = new UserWorkPosition
             {
                 UserId = SelectedUser.Id,
@@ -151,14 +133,12 @@ namespace WorkstationManager.ViewModels
                 WorkDate = DateTime.Now
             };
 
-            db.UserWorkPositions.Add(newAssignment);
-            await db.SaveChangesAsync();
+            await AdminService.AssignUserAsync(newAssignment);
 
-            OnPropertyChanged(nameof(SelectedUserCurrentAssignmentDate));
+            await UpdateSelectedUserAssignmentDateAsync(SelectedUser.Id);
 
             var selectedUserId = SelectedUser.Id;
             await LoadDataAsync();
-
             SelectedUser = Users.FirstOrDefault(u => u.Id == selectedUserId);
         }
 
@@ -191,19 +171,16 @@ namespace WorkstationManager.ViewModels
                 return;
             }
 
-            using var db = new AppDbContext();
-
-            var exists = await db.Users.AnyAsync(u => u.Username == NewUsername);
-            if (exists)
+            if (await userService.UsernameExistsAsync(NewUsername))
             {
                 CreationErrorMessage = "Username already exists.";
                 return;
             }
 
-            var userRole = await db.Roles.FirstOrDefaultAsync(r => r.RoleName == "User");
-            if (userRole == null)
+            var defaultRole = await userService.GetUserRoleAsync("User");
+            if (defaultRole == null)
             {
-                CreationErrorMessage = "User role not found.";
+                CreationErrorMessage = "Default user role not found in the database.";
                 return;
             }
 
@@ -215,25 +192,22 @@ namespace WorkstationManager.ViewModels
                 FirstName = NewFirstName,
                 LastName = NewLastName,
                 Password = hashedPassword,
-                RoleId = userRole.Id
+                RoleId = defaultRole.Id,
             };
 
-            db.Users.Add(newUser);
-            await db.SaveChangesAsync();
+            var createdUser = await userService.CreateUserAsync(newUser);
 
             var assignment = new UserWorkPosition
             {
-                UserId = newUser.Id,
+                UserId = createdUser.Id,
                 WorkPositionId = NewUserWorkPosition.Id,
                 ProductName = NewUserProductName,
                 WorkDate = DateTime.Now
             };
 
-            db.UserWorkPositions.Add(assignment);
-            await db.SaveChangesAsync();
+            await AdminService.AssignUserAsync(assignment);
 
             CreationSuccessMessage = "User created successfully!";
-
             NewUsername = "";
             NewFirstName = "";
             NewLastName = "";
@@ -242,8 +216,8 @@ namespace WorkstationManager.ViewModels
             NewUserProductName = "";
 
             await LoadDataAsync();
-
-            SelectedUser = Users.FirstOrDefault(u => u.Id == newUser.Id);
+            SelectedUser = Users.FirstOrDefault(u => u.Username == createdUser.Username);
         }
+
     }
 }

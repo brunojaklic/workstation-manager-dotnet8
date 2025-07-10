@@ -7,19 +7,19 @@ namespace WorkstationManager.Data
 {
     public class AppDbContext : DbContext
     {
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
+        {
+        }
+
+        public AppDbContext()
+        {
+        }
 
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Role> Roles { get; set; } = null!;
         public DbSet<WorkPosition> WorkPositions { get; set; } = null!;
         public DbSet<UserWorkPosition> UserWorkPositions { get; set; } = null!;
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            options.UseMySql(
-                "server=localhost;port=3306;database=workstation_db;user=root;password=root;",
-                new MySqlServerVersion(new Version(8, 0, 42))
-            );
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -137,6 +137,5 @@ namespace WorkstationManager.Data
                 }
             );
         }
-
     }
 }

@@ -1,15 +1,21 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using WorkstationManager.Data;
-using WorkstationManager.ViewModels;
-using static BCrypt.Net.BCrypt;
+using WorkstationManager.Services;
 
 namespace WorkstationManager.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
+        private readonly IUserService userService;
+        private readonly IAdminService workstationService;
+
+        public MainWindowViewModel(IUserService userService, IAdminService workstationService)
+        {
+            this.userService = userService;
+            this.workstationService = workstationService;
+        }
+
         [ObservableProperty] private string username = "";
         [ObservableProperty] private string password = "";
         [ObservableProperty] private string errorMessage = "";
@@ -27,13 +33,9 @@ namespace WorkstationManager.ViewModels
 
             try
             {
-                using var db = new AppDbContext();
+                var user = await userService.GetByUsernameAsync(Username);
 
-                var user = await db.Users
-                    .Include(u => u.Role)
-                    .FirstOrDefaultAsync(u => u.Username == Username);
-
-                if (user != null && Verify(Password, user.Password))
+                if (user != null && BCrypt.Net.BCrypt.Verify(Password, user.Password))
                 {
                     ErrorMessage = "";
                     Password = "";
@@ -41,11 +43,11 @@ namespace WorkstationManager.ViewModels
 
                     if (user.Role.RoleName == "Admin")
                     {
-                        CurrentViewModel = new AdminViewModel(user, SignOutCommand);
+                        CurrentViewModel = new AdminViewModel(user, SignOutCommand, userService, workstationService);
                     }
                     else if (user.Role.RoleName == "User")
                     {
-                        CurrentViewModel = new UserViewModel(user, SignOutCommand);
+                        CurrentViewModel = new UserViewModel(user, SignOutCommand, workstationService);
                     }
                     else
                     {

@@ -1,9 +1,10 @@
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
-using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using WorkstationManager.Data;
+using WorkstationManager.Services;
 using WorkstationManager.ViewModels;
 using WorkstationManager.Views;
 
@@ -11,6 +12,8 @@ namespace WorkstationManager
 {
     public partial class App : Application
     {
+        private ServiceProvider? _serviceProvider;
+
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -18,14 +21,21 @@ namespace WorkstationManager
 
         public override void OnFrameworkInitializationCompleted()
         {
+            // Setup DI container
+            var services = new ServiceCollection();
+
+            ConfigureServices(services);
+
+            _serviceProvider = services.BuildServiceProvider();
+
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
-                // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
-                DisableAvaloniaDataAnnotationValidation();
+                // Resolve MainWindowViewModel from DI
+                var mainWindowViewModel = _serviceProvider.GetRequiredService<MainWindowViewModel>();
+
                 desktop.MainWindow = new MainWindow
                 {
-                    DataContext = new MainWindowViewModel(),
+                    DataContext = mainWindowViewModel,
                 };
                 desktop.MainWindow.Show();
             }
@@ -33,17 +43,25 @@ namespace WorkstationManager
             base.OnFrameworkInitializationCompleted();
         }
 
-        private void DisableAvaloniaDataAnnotationValidation()
+        private void ConfigureServices(IServiceCollection services)
         {
-            // Get an array of plugins to remove
-            var dataValidationPluginsToRemove =
-                BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
-
-            // remove each entry found
-            foreach (var plugin in dataValidationPluginsToRemove)
+            // Register your DbContext with MySQL connection string
+            services.AddDbContext<AppDbContext>(options =>
             {
-                BindingPlugins.DataValidators.Remove(plugin);
-            }
+                options.UseMySql(
+                    "server=localhost;port=3306;database=workstation_db;user=root;password=password123;",
+                    new MySqlServerVersion(new System.Version(8, 0, 42))
+                );
+            });
+
+            // Register services as singletons or scoped as needed
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IAdminService, AdminService>();
+
+            // Register your view models
+            services.AddTransient<MainWindowViewModel>();
+            services.AddTransient<AdminViewModel>();
+            // Add other ViewModels as needed...
         }
     }
 }
