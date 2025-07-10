@@ -21,7 +21,6 @@ namespace WorkstationManager
 
         public override void OnFrameworkInitializationCompleted()
         {
-            // Setup DI container
             var services = new ServiceCollection();
 
             ConfigureServices(services);
@@ -30,7 +29,6 @@ namespace WorkstationManager
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                // Resolve MainWindowViewModel from DI
                 var mainWindowViewModel = _serviceProvider.GetRequiredService<MainWindowViewModel>();
 
                 desktop.MainWindow = new MainWindow
@@ -45,7 +43,6 @@ namespace WorkstationManager
 
         private void ConfigureServices(IServiceCollection services)
         {
-            // Register your DbContext with MySQL connection string
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseMySql(
@@ -53,15 +50,11 @@ namespace WorkstationManager
                     new MySqlServerVersion(new System.Version(8, 0, 42))
                 );
             });
-
-            // Register services as singletons or scoped as needed
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IAdminService, AdminService>();
 
-            // Register your view models
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<AdminViewModel>();
-            // Add other ViewModels as needed...
         }
     }
 }
