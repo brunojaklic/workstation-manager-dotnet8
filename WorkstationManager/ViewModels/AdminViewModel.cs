@@ -117,9 +117,6 @@ namespace WorkstationManager.ViewModels
             WorkPositions.Clear();
             foreach (var wp in workPositions)
                 WorkPositions.Add(wp);
-
-            if (Users.Any() && SelectedUser == null)
-                SelectedUser = Users[0];
         }
 
         private async Task ChangeAssignmentAsync()
@@ -218,6 +215,7 @@ namespace WorkstationManager.ViewModels
             await AdminService.AssignUserAsync(assignment);
 
             CreationSuccessMessage = "User created successfully!";
+
             NewUsername = "";
             NewFirstName = "";
             NewLastName = "";
@@ -226,6 +224,7 @@ namespace WorkstationManager.ViewModels
             NewUserProductName = "";
 
             await LoadDataAsync();
+
             SelectedUser = Users.FirstOrDefault(u => u.Username == createdUser.Username);
         }
     }
