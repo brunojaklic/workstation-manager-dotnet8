@@ -94,20 +94,10 @@ namespace WorkstationManager.ViewModels
             OnPropertyChanged(nameof(SelectedUserCurrentAssignmentDate));
         }
 
-        private async Task UpdateSelectedUserAssignmentDateAsync(int userId)
-        {
-            if (userId == 0)
-            {
-                SelectedUserCurrentAssignmentDate = "-";
-                return;
-            }
-
-            var assignment = await AdminService.GetLatestAssignmentAsync(userId);
-            SelectedUserCurrentAssignmentDate = assignment?.WorkDate.ToString("yyyy-MM-dd") ?? "-";
-        }
-
         private async Task LoadDataAsync()
         {
+            var currentSelectedUserId = SelectedUser?.Id;
+
             var users = await userService.GetAllUsersAsync();
             var workPositions = await AdminService.GetAllWorkstationsAsync();
 
@@ -119,8 +109,14 @@ namespace WorkstationManager.ViewModels
             foreach (var wp in workPositions)
                 WorkPositions.Add(wp);
 
-            if (Users.Any() && SelectedUser == null)
+            if (currentSelectedUserId.HasValue)
+            {
+                SelectedUser = Users.FirstOrDefault(u => u.Id == currentSelectedUserId.Value);
+            }
+            else if (Users.Any())
+            {
                 SelectedUser = Users[0];
+            }
         }
 
         private async Task ChangeAssignmentAsync()
@@ -141,12 +137,9 @@ namespace WorkstationManager.ViewModels
             await AdminService.AssignUserAsync(newAssignment);
 
             await LoadDataAsync();
-
             SelectedUser = Users.FirstOrDefault(u => u.Id == userId);
-
             await OnSelectedUserChangedAsync(SelectedUser);
         }
-
 
         private async Task CreateUserAsync()
         {
@@ -228,8 +221,9 @@ namespace WorkstationManager.ViewModels
             NewUserProductName = "";
 
             await LoadDataAsync();
-            SelectedUser = Users.FirstOrDefault(u => u.Username == createdUser.Username);
-        }
 
+            SelectedUser = Users.FirstOrDefault(u => u.Id == createdUser.Id);
+            await OnSelectedUserChangedAsync(SelectedUser);
+        }
     }
 }
