@@ -8,7 +8,6 @@ namespace WorkstationManager.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
         }
     }
 }
