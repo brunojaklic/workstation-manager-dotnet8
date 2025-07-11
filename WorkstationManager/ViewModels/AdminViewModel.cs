@@ -88,6 +88,7 @@ namespace WorkstationManager.ViewModels
                 : null;
 
             ProductName = assignment?.ProductName ?? "";
+
             SelectedUserCurrentAssignmentDate = assignment?.WorkDate.ToString("yyyy-MM-dd") ?? "-";
 
             OnPropertyChanged(nameof(SelectedUserCurrentAssignmentDate));
@@ -117,6 +118,9 @@ namespace WorkstationManager.ViewModels
             WorkPositions.Clear();
             foreach (var wp in workPositions)
                 WorkPositions.Add(wp);
+
+            if (Users.Any() && SelectedUser == null)
+                SelectedUser = Users[0];
         }
 
         private async Task ChangeAssignmentAsync()
@@ -142,6 +146,7 @@ namespace WorkstationManager.ViewModels
 
             await OnSelectedUserChangedAsync(SelectedUser);
         }
+
 
         private async Task CreateUserAsync()
         {
@@ -215,7 +220,6 @@ namespace WorkstationManager.ViewModels
             await AdminService.AssignUserAsync(assignment);
 
             CreationSuccessMessage = "User created successfully!";
-
             NewUsername = "";
             NewFirstName = "";
             NewLastName = "";
@@ -224,8 +228,8 @@ namespace WorkstationManager.ViewModels
             NewUserProductName = "";
 
             await LoadDataAsync();
-
             SelectedUser = Users.FirstOrDefault(u => u.Username == createdUser.Username);
         }
+
     }
 }
